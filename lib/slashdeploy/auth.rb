@@ -38,7 +38,7 @@ module SlashDeploy
         # param so we know what slack user they are when the hit the GitHub
         # callback.
         state = state_encoder.encode(user_id: account.user.id)
-        url = client.auth_code.authorize_url(state: state, scope: 'repo_deployment')
+        url = "#{Rails.application.routes.url_helpers.root_url}/auth/github?auth_state=#{state}"
         Slash.reply(Slack::Message.new(text: "I don't know who you are on GitHub yet. Please <#{url}|authenticate> then try again."))
       end
     end

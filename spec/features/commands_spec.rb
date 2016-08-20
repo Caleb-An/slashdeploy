@@ -35,10 +35,10 @@ RSpec.feature 'Slash Commands' do
     )
 
     command '/deploy help', as: account
-    state = command_response.text.gsub(/^.*state=(.*?)\|.*$/, '\\1')
+    state = command_response.text.gsub(/^.*auth_state=(.*?)\|.*$/, '\\1')
     expect do
-      visit "/auth/github/callback?state=#{state}&code=code"
-    end.to change { GitHubAccount.count }.by(1)
+      visit "/auth/github?auth_state=#{state}"
+    end.to_not change { User.count }
 
     command '/deploy help', as: account
     expect(command_response.text).to eq HelpMessage::USAGE.strip
