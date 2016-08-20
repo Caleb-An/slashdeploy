@@ -82,6 +82,23 @@ module SlashDeploy
       authorize_url: 'https://slack.com/oauth/authorize',
       token_url: 'https://slack.com/api/oauth.access'
     )
+
+    config.middleware.use OmniAuth::Builder do
+      provider \
+        :github,
+        ENV['GITHUB_CLIENT_ID'],
+        ENV['GITHUB_CLIENT_SECRET'],
+        scope: 'repo_deployment'
+      provider \
+        :slack,
+        ENV['SLACK_CLIENT_ID'],
+        ENV['SLACK_CLIENT_SECRET'],
+        scope: 'identify',
+        setup: lambda { |env|
+          request = Rack::Request.new(env)
+          env['omniauth.strategy'].options[:scope] = request.params['scope'] if request.params['scope'].present?
+        }
+    end
   end
 end
 

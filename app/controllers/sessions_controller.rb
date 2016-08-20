@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   skip_before_filter :verify_authenticity_token
+  before_filter :sign_in_from_state
 
   def failure
     render text: 'Authentication failed'
@@ -49,6 +50,14 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def sign_in_from_state
+    if state = params[:state].presence
+      decoded_state = SlashDeploy.state.decode(state)
+      user = User.find(decoded_state['user_id'])
+      warden.set_user user
+    end
+  end
 
   def after_sign_in_path
     request.env['omniauth.origin'] || root_url
