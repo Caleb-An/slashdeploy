@@ -2,9 +2,15 @@ Rails.application.routes.draw do
   get '/auth/github/callback' => 'github#callback'
   get '/auth/slack/callback' => 'slack#callback'
 
+  get '/auth2/:provider/callback' => 'sessions#create'
+  get '/auth2/failure' => 'sessions#failure'
+
   get '/slack/installed' => 'slack#installed', as: :installed
   get '/slack/install' => 'slack#install', as: :install
   post '/slack/install' => 'slack#early_access', as: :early_access
+
+  get '/login' => redirect('/auth/slack'), as: :login
+  post '/logout' => 'sessions#destroy', as: :logout
 
   # Docs
   get '/docs' => 'documentation#index', as: :documentation
